@@ -1,37 +1,28 @@
+print("Запуск Железка 2.0 Python...")
+
 import random as rm
+from tkinter import *
+import tkinter as tk
+import time
 
-splitter = "⌂"
+root = Tk()
+root.title("Александр Железкин")
 
-print("запуск Железкин 2.0 Python...")
+window_width = 400
+window_height = 300
 
-def encode_word(base_word, next_words):
-    answer1 = [base_word]
-    for a in range(len(next_words)):
-        answer1.append(list(next_words.keys())[a-1])
-        answer1.append(next_words[list(next_words.keys())[a-1]])
-    return answer1
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
-def encode_list(base_list):
-    answer2 = ""
-    for b in range(len(base_list)):
-        answer2 += (str(base_list[b]) + splitter)
-    return answer2
+center_x = int(screen_width/2 - window_width / 2)
+center_y = int(screen_height/2 - window_height / 2)
 
-def decode_word(base_string):
-    answer3 = []
-    answer3_builder = ""
-    for c in range(len(base_string)):
-        if not base_string[c] == splitter:
-            answer3_builder += base_string[c]
-        else:
-            try:
-                answer3.append(int(answer3_builder))
-            except:
-                answer3.append(str(answer3_builder))
-            answer3_builder = ""
-    return answer3
+root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+root.iconbitmap('./ailogo.ico')
 
-def random_choice(inputs):
+def choice(inputs):
+    inputs.pop(0)
+    print(inputs)
     choice = rm.randint(1,100)
     choice_builder = choice
     addit1 = 0
@@ -39,12 +30,9 @@ def random_choice(inputs):
         if int(choice_builder) < int(inputs[d]) + int(addit1):
             return d+1
         else: addit1 += inputs[d]
-    return random_choice(inputs)
+    return choice(inputs)
 
-def s_str(input_string):
-    return input_string.split( )
-
-def f_n_o(lst, item, n):
+def find(lst, item, n):
     count = 0
     for index, value in enumerate(lst):
         if value == item:
@@ -53,67 +41,90 @@ def f_n_o(lst, item, n):
                 return index
     return -1
 
-def generate_data(input_string):
-    answer_list1 = []
-    a_l_b1 = []
-    a_l_b2 = []
-    data_f = s_str(input_string)
-    for e in range(len(data_f)):
-        a_l_b2.append(data_f[e])
-        for f in range(data_f.count(data_f[e])):
-            if not f_n_o(input_string, data_f[e], f) == len(data_f):
-                a_l_b1.append(f_n_o(input_string, data_f[e], f) + 1)
-        for g in range(len(a_l_b1)):
-            if not a_l_b1[g] in a_l_b2:
-                probty = int(len(a_l_b1) / a_l_b1.count(a_l_b1[g]) * 100)
-                a_l_b2.append(a_l_b1[g])
-                a_l_b2.append(probty)
-        answer_list1.append(encode_list(a_l_b2))
-        a_l_b1 = []
-        a_l_b2 = []
-    return answer_list1
+def say(input_list, length):
+    print(input_list,"input list 2 say")
+    wordn = rm.randint(0,len(list(input_list))-1)
+    print(input_list[wordn],"wordn")
+    answer = [input_list[wordn].get("_word")]
+    for a in range(length):
+        wordnlist = input_list[wordn]
+        w2 = input_list[wordn]
+        nextword = choice(list(wordnlist.values()))
+        print(nextword)
+        nextword_str = w2.get("_word")
+        print(nextword_str)
+        for b in range(len(input_list)):
+            print(input_list[b].get("_word"),"ybub")
+            print(list(wordnlist.keys())[nextword],"nextword")
+            if input_list[b].get("_word") == list(wordnlist.keys())[nextword]:
+                wordn = b
+                print(b,"b")
+                break
+        answer.append(input_list[wordn].get("_word"))
+    return answer
 
-def say(input_list1, len1):
-    start_word = rm.randint(0,len(input_list1))
-    print(start_word,"sw")
-    print(len(input_list1),"lenn")
-    start_word_str = decode_word(input_list1[start_word-1])[0]
-    start_word_list = decode_word(input_list1[start_word])
-    start_word_list.pop(0)
-    print(start_word_list)
-    answer_list2 = [start_word_str]
-    print(answer_list2)
-    list_builder1 = []
-    word_list1 = start_word_list
-    word = start_word
-    for h in range(len1):
-        for i in range(int(len(word_list1)/2)):
-            list_builder1.append(word_list1[i*2+1])
-        print(list_builder1,"варианты")
-        next_word = random_choice(list_builder1)
-        next_word_str = word_list1[next_word - 1]
-        print(str(next_word_str),"некст ворд")
-        if next_word_str != "":
-            for j in range(len(input_list1)):
-                print(decode_word(input_list1[j])[0],"ищет слово в списке")
-                if decode_word(input_list1[j])[0] == next_word_str:
-                    next_word_a = j
-        else:
-            next_word_a = rm.randint(1,len(input_list1))
-        next_word_str_a = decode_word(input_list1[next_word_a-1])[0]
-        answer_list2.append(next_word_str)
-        next_word_list_a = decode_word(input_list1[next_word_a]).pop(0)
-        list_builder1 = []
-        word_list1 = next_word_list_a
-        word = next_word_a
-    return answer_list2
-        
+def waw(wordS, listS):
+    countW = listS.count(wordS)
+    answer = []
+    for e in range(countW):
+        print(listS)
+        if find(listS,wordS,e+1)+1 < len(listS):
+            print(find(listS,wordS,e+1)+1)
+            answer.append(listS[find(listS,wordS,e+1)+1])
+    return answer
+
+def calcprob(listP):
+    blockWords = []
+    answer = []
+    for f in range(len(listP)):
+        if not listP[f] in blockWords:
+            timesApp = listP.count(listP[f])
+            answer.append({listP[f]:round((100/len(listP))*timesApp)})
+    return answer
+
+def gen(inp_str):
+    wb = []
+    chain = []
+    for g in range(len(inp_str.split(" "))):
+        if not inp_str.split(" ")[g] in wb:
+            print(inp_str.split(" "),"inp str split")
+            print(inp_str.split(" ")[g],"inp str split symbol")
+            print(1,"")
+            print(waw(inp_str.split(" ")[g] , list(inp_str.split(" "))),"слова после слова",inp_str.split(" ")[g])
+            chainpart = [{"_word":inp_str.split(" ")[g]}]
+            for h in range(len(calcprob(waw(inp_str.split(" ")[g],inp_str.split(" "))))):
+                chainpart.append(calcprob(waw(inp_str.split(" ")[g],inp_str.split(" ")))[h-1])
+            chainpart1 = {}
+            for i in range(len(chainpart)):
+                chainpart1 = chainpart1|chainpart[i]
+            chain.append(chainpart1)
+            print(chain,"chain")
+            wb.append(inp_str.split(" ")[g])
+    return chain
+
+print("СЕЙЧАС БУДЕТ ЗАГРУЗКА! ТАК И ДОЛЖНО БЫТЬ!")
+time.sleep(3)
+chain = gen("привет всем вы на канале анука давайка и всем привет вы соверма сво сво вы привет")
+
+answerr = tk.Label(root, text="Тут появится результат генерации")
+answerr.pack()
+
+def action():
+    print("генерируем...")
+    answerr.config(text=str(say(chain,8)))
     
-print(encode_list(encode_word("привет", {"я":50,"ghbdtn":50})))
-print(decode_word(encode_list(encode_word("привет", {"я":50,"ghbdtn":50}))))
-print(encode_word("привет", {"я":50,"ghbdtn":50}))
-print(random_choice([25,25,25,25]))
-print(s_str("pupu pu"))
-print(generate_data("vsem krevet vsem svo vsem"))
-print(say(["привет⌂всем⌂50⌂даня⌂50⌂","всем⌂буплям⌂100⌂","даня⌂умный⌂50⌂привет⌂","буплям⌂привет⌂100","умный⌂даня⌂100"],8))
+button = tk.Button( 
+   text="Сгенерировать",
+   command=action
+)
+button.pack()
 
+#print(say([{"_word":"privet","vsem":50,"dane":50},{"_word":"vsem","privet":100},{"_word":"dane","vsem":100}],8))
+
+#print(chain)
+#print(say(chain,8))
+
+message = tk.Label(root, text="Александр Железкин 2.0 Python от OwlProgramms")
+message.pack()
+
+root.mainloop()
