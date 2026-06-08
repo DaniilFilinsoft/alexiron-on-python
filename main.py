@@ -1,14 +1,29 @@
-print("Запуск Железка 2.0 Python...")
+#--------------------------------------#
+#                                      #
+# Александр Железкин 2.0 Python-версия #
+#                       от OwlPrograms #
+#                                      #
+#--------------------------------------#
+# цепь маркова для генерации текста    #
+# версия 2.0.02                        #
+#--------------------------------------#
+# изменение: фикс изменения цепи и     #
+# граф. улучшения                      #
+#--------------------------------------#
+
+### ИМПОРТ БИБЛИОТЕК
 
 import random as rm
 from tkinter import *
 import tkinter as tk
 import time
 
+### НАСТРОЙКА ОКНА
+
 root = Tk()
 root.title("Александр Железкин")
 
-window_width = 400
+window_width = 550
 window_height = 300
 
 screen_width = root.winfo_screenwidth()
@@ -20,116 +35,119 @@ center_y = int(screen_height/2 - window_height / 2)
 root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 root.iconbitmap('./ailogo.ico')
 
-def choice(inputs):
-    inputs.pop(0)
-    print(inputs)
-    choice = rm.randint(1,100)
+### ФУНКЦИИ
+
+def choice(inputs): # Делает выбор между вероятностями
+    
+    inputs.pop(0) # убираем первый элемент
+    
+    choice = rm.randint(1,100) # случайное число
     choice_builder = choice
-    addit1 = 0
+    
+    addit1 = 0 # для цикла
     for d in range(len(inputs)):
-        if int(choice_builder) < int(inputs[d]) + int(addit1):
+        if int(choice_builder) < int(inputs[d]) + int(addit1): # если число в диапазоне
             return d+1
         else: addit1 += inputs[d]
-    return choice(inputs)
+    return choice(inputs) # рекурсия
 
-def find(lst, item, n):
+def find(lst, item, n): # найти n-нное появление элемента в списке
+    
     count = 0
-    for index, value in enumerate(lst):
+    for index, value in enumerate(lst): # интересно как это работает
         if value == item:
             count += 1
             if count == n:
                 return index
-    return -1
+            
+    return -1 # на случай если элемент в списке отсутствует
 
-def say(input_list, length):
-    print(input_list,"input list 2 say")
-    wordn = rm.randint(0,len(list(input_list))-1)
-    print(input_list[wordn],"wordn")
-    answer = [input_list[wordn].get("_word")]
-    for a in range(length):
-        wordnlist = input_list[wordn]
-        w2 = input_list[wordn]
-        nextword = choice(list(wordnlist.values()))
-        print(nextword)
-        nextword_str = w2.get("_word")
-        print(nextword_str)
-        for b in range(len(input_list)):
-            print(input_list[b].get("_word"),"ybub")
-            print(list(wordnlist.keys())[nextword],"nextword")
+def say(input_list, length): # Сгенерировать текст по данной цепи
+    
+    wordn = rm.randint(0,len(list(input_list))-1) # выбирается слово, с которого начинается построение текста
+    answer = [input_list[wordn].get("_word")] # добавление его в ответ
+    
+    for a in range(length): # цикл генерации
+        
+        wordnlist = input_list[wordn] # данные слова
+        w2 = input_list[wordn] # что это зачем
+        nextword = choice(list(wordnlist.values())) 
+        nextword_str = w2.get("_word") # выбранное слово
+        
+        for b in range(len(input_list)): # цикл для поиска выбранного слова чтоб от него выбирать другие
             if input_list[b].get("_word") == list(wordnlist.keys())[nextword]:
                 wordn = b
-                print(b,"b")
                 break
-        answer.append(input_list[wordn].get("_word"))
+        answer.append(input_list[wordn].get("_word")) # добавление 
+        
     return answer
 
-def waw(wordS, listS):
+def waw(wordS, listS): # Я забыл что это
     countW = listS.count(wordS)
     answer = []
     for e in range(countW):
-        print(listS)
         if find(listS,wordS,e+1)+1 < len(listS):
-            print(find(listS,wordS,e+1)+1)
             answer.append(listS[find(listS,wordS,e+1)+1])
     return answer
 
-def calcprob(listP):
-    blockWords = []
+def calcprob(listP): # Вычислить частоту появления слов
+    blockWords = [] # слова уже прощитанные
     answer = []
-    for f in range(len(listP)):
+    for f in range(len(listP)): # поиск
         if not listP[f] in blockWords:
             timesApp = listP.count(listP[f])
-            answer.append({listP[f]:round((100/len(listP))*timesApp)})
+            answer.append({listP[f]:round((100/len(listP))*timesApp)}) # формула появления слов
     return answer
 
-def gen(inp_str):
+def gen(inp_str): # Генерация цепей / Главная тареллка спаггети или как это слово пишется ёперный театр
     wb = []
     chain = []
-    for g in range(len(inp_str.split(" "))):
-        if not inp_str.split(" ")[g] in wb:
-            print(inp_str.split(" "),"inp str split")
-            print(inp_str.split(" ")[g],"inp str split symbol")
-            print(1,"")
-            print(waw(inp_str.split(" ")[g] , list(inp_str.split(" "))),"слова после слова",inp_str.split(" ")[g])
-            chainpart = [{"_word":inp_str.split(" ")[g]}]
+    for g in range(len(inp_str.split(" "))): # для всех слов:
+        if not inp_str.split(" ")[g] in wb: # если слово не было обработанно:
+            chainpart = [{"_word":inp_str.split(" ")[g]}] # слава тебе господи оно всё работает (через раз но сути не меняет)
             for h in range(len(calcprob(waw(inp_str.split(" ")[g],inp_str.split(" "))))):
                 chainpart.append(calcprob(waw(inp_str.split(" ")[g],inp_str.split(" ")))[h-1])
             chainpart1 = {}
             for i in range(len(chainpart)):
                 chainpart1 = chainpart1|chainpart[i]
             chain.append(chainpart1)
-            print(chain,"chain")
             wb.append(inp_str.split(" ")[g])
     return chain
 
-print("СЕЙЧАС БУДЕТ ЗАГРУЗКА! ТАК И ДОЛЖНО БЫТЬ!")
-time.sleep(3)
+### ПЕРЕМЕННЫЕ
+
+global chain
+
+### ФУНКЦИОНАЛ
+
 chain = gen("привет всем вы на канале анука давайка и всем привет вы соверма сво сво вы привет")
 
-answerr = tk.Label(root, text="Тут появится результат генерации")
+answerr = tk.Label(root, text="Здесь появится результат генерации текста")
 answerr.pack()
 
-new_tsep = ""
+new_chain = ""
 
-def action():
-    print("генерируем...")
-    answerr.config(text=str(say(chain,8)))
+def action(): # Генерация текста
+
+    print(chain)
+    answerr.config(text=str(say(chain,rm.randint(5,10))))
 
 button = tk.Button( 
-   text="Сгенерировать",
+   text="Сгенерировать!",
    command=action
 )
 button.pack()
 
-changer = tk.Entry(root,textvariable = new_tsep)
+changer = tk.Entry(root,textvariable = new_chain)
 changer.pack()
 
 def action2():
-    new_tsep = changer.get()
-    chain = gen(new_tsep)
+    global chain
+    new_chain = changer.get()
+    chain = gen(new_chain)
 
 change = tk.Button( 
-   text="Изменить цепь маркова на ту, что в вводе",
+   text="Поменять текст с которого генерации",
    command=action2
 )
 change.pack()
@@ -139,7 +157,7 @@ change.pack()
 #print(chain)
 #print(say(chain,8))
 
-message = tk.Label(root, text="Александр Железкин 2.0 Python от OwlProgramms")
-message.pack()
+message = tk.Label(root, text="Александр Железкин 2.0 Python от OwlPrograms (2.0.02)")
+message.pack(side="bottom")
 
-root.mainloop()
+root.mainloop() # Запуск приложения
